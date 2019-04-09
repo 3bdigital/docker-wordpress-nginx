@@ -45,10 +45,12 @@ RUN { \
 
 VOLUME /var/www/html
 
-ENV NGINX_VERSION 1.9.11-1~jessie
+ENV NGINX_VERSION 1.15.8-1~stretch
+
+RUN apt-get update && apt-get install -y gnupg
 
 RUN curl -O https://nginx.org/keys/nginx_signing.key && apt-key add ./nginx_signing.key \
-	&& echo "deb http://nginx.org/packages/mainline/debian/ jessie nginx" >> /etc/apt/sources.list \
+	&& echo "deb http://nginx.org/packages/mainline/debian/ stretch nginx" >> /etc/apt/sources.list \
 	&& apt-get update \
 	&& apt-get install -y ca-certificates nginx=${NGINX_VERSION} gettext-base \
 	&& rm -rf /var/lib/apt/lists/*
