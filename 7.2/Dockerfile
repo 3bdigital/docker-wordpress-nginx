@@ -38,12 +38,12 @@ RUN { \
 		echo 'opcache.memory_consumption=128'; \
 		echo 'opcache.interned_strings_buffer=8'; \
 		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.revalidate_freq=2'; \
+		echo 'opcache.revalidate_freq=60'; \
 		echo 'opcache.fast_shutdown=1'; \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-VOLUME /var/www/html
+WORKDIR /var/www/html
 
 ENV NGINX_VERSION 1.15.8-1~stretch
 
@@ -66,6 +66,13 @@ EXPOSE 80 443
 COPY ssl/dev.3bweb.com.crt /etc/nginx/ssl/dev.3bweb.com.crt
 COPY ssl/dev.3bweb.com.key /etc/nginx/ssl/dev.3bweb.com.key
 
+# wordpress config for nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY wordpress.conf /etc/nginx/conf.d/default.conf
+
+# wordpress config for php
+COPY wordpress.ini /usr/local/etc/php/conf.d/
+
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD php-fpm -D && nginx -g 'daemon off;'
