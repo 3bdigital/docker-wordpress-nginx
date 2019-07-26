@@ -59,12 +59,19 @@ RUN curl -O https://nginx.org/keys/nginx_signing.key && apt-key add ./nginx_sign
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log
 
-RUN apt-get update && apt-get -y install mysql-client
+RUN apt-get update && apt-get -y install mariadb-client
 
 EXPOSE 80 443
 
 COPY ssl/dev.3bweb.com.crt /etc/nginx/ssl/dev.3bweb.com.crt
 COPY ssl/dev.3bweb.com.key /etc/nginx/ssl/dev.3bweb.com.key
+
+# wordpress config for nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY wordpress.conf /etc/nginx/conf.d/default.conf
+
+# wordpress config for php
+COPY wordpress.ini /usr/local/etc/php/conf.d/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
